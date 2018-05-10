@@ -1,8 +1,19 @@
 group 'com.hania'
 version '1.0-SNAPSHOT'
 
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'de.gliderpilot.gradle.jnlp:gradle-jnlp-plugin:+'
+    }
+}
+
 apply plugin: 'java'
 apply plugin: 'groovy'
+apply plugin: 'de.gliderpilot.jnlp'
 
 sourceCompatibility = 1.8
 
@@ -15,11 +26,48 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
+jnlp {
+    href 'launch.jnlp'
+    codebase 'http://localhost:8080/'
+    spec '1.0'
+    j2seParams = [version: '1.0+', 'max-heap-size': '256m']
+    signJarAddedManifestEntries = [
+            'Codebase': 'http://localhost:8080',
+            'Permissions': 'all-permissions',
+            'Application-Name': "${project.name}"
+    ]
+    signJarRemovedManifestEntries = '(?:Trusted-Only|Trusted-Library|.*-Digest)'
+    useVersions = true
+    usePack200 = false
+    mainClassName = 'com.hania.Runner'
+    withXml {
+        information {
+            title project.name
+            vendor project.group ?: project.name
+        }
+        security {
+            'all-permissions'()
+        }
+    }
+    desc = {
+        'application-desc'('main-class': "${project.jnlp.mainClassName}") {
+            argument('-verbose')
+        }
+    }
+    signJarParams = [alias: 'calc', storepass: 'hania123']
+}
+
+task genkey {
+    doLast {
+        ant.genkey(alias: 'calc', storepass: 'hania123', dname: 'CN=hvvka, OU=Electronics Department, O=PWr, L=Breslau, ST=Dolny Slask, C=PL')
+    }
+}
+
 task createJar(type: Jar) {
     manifest {
-        attributes 'Implementation-Title': rootProject.name,
-                'Implementation-Version': version,
-                'Main-Class': 'com.hania.Runner'
+        attributes 'Main-Class': 'com.hania.Runner'
+           //'Implementation-Title': rootProject.name,
+                //                'Implementation-Version': version,
     }
     baseName = project.name
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
