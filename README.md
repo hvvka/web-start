@@ -21,7 +21,7 @@ $ keytool -export -alias calc -keystore calc.jks -rfc -file calc.csr
 
 **Important:** Add the certificate as a trusted one in Java Control Panel.
 For Mac: System Preferences > Java > Open Java Control Panel > Security tab > Manage certificates > User > Import.
-Import it possibly everywhere (trusted certificates, sercure site etc.).
+Import it possibly everywhere (trusted certificates, secure site etc.).
 
 - create *.jnlp file with a signed jar
 ```bash

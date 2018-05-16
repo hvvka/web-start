@@ -65,11 +65,15 @@ task genkey {
 
 task createJar(type: Jar) {
     manifest {
-        attributes 'Main-Class': 'com.hania.Runner'
-           //'Implementation-Title': rootProject.name,
-                //                'Implementation-Version': version,
+        attributes 'Implementation-Title': rootProject.name,
+                'Implementation-Version': version,
+                'Main-Class': 'com.hania.Runner'
     }
     baseName = project.name
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.7'
 }
